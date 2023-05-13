@@ -1,13 +1,14 @@
 import java.util.Random;
-
 import processing.core.PApplet;
 
 public class Minsweeper extends PApplet {
 
-	int height = 20;
-	int width = 50;
+	//User pref
+	int height = 25;
+	int width = 25;
 	int cellSize = 30;
-	long seed = 7678765;
+	//seed for random number generator
+	long seed = System.currentTimeMillis();
 
 	Cell cells[][] = new Cell[width][height];
 
