@@ -111,12 +111,23 @@ public class Minsweeper extends PApplet {
 			if (isFlaged) {
 				image(flag, x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4);
 			}
-			if (isBomb && gameOver && !isFlaged) {
-				image(mine, x * cellSize, y * cellSize, cellSize, cellSize);
-				stroke(250, 0, 0);
-				strokeWeight(1);
-				line(x * cellSize, y * cellSize, x * cellSize + cellSize, y * cellSize + cellSize);
-				line(x * cellSize + cellSize, y * cellSize, x * cellSize, y * cellSize + cellSize);
+			if (gameOver) {
+				if (isBomb && !isFlaged) {
+					image(mine, x * cellSize, y * cellSize, cellSize, cellSize);
+				}
+				if (isBomb && isOpen) {
+					stroke(250, 0, 0);
+					strokeWeight(2);
+					line(x * cellSize, y * cellSize, x * cellSize + cellSize, y * cellSize + cellSize);
+					line(x * cellSize + cellSize, y * cellSize, x * cellSize, y * cellSize + cellSize);
+				}
+				if (!isBomb && isFlaged) {
+					stroke(0, 0, 0);
+					strokeWeight(2);
+					line(x * cellSize, y * cellSize, x * cellSize + cellSize, y * cellSize + cellSize);
+					line(x * cellSize + cellSize, y * cellSize, x * cellSize, y * cellSize + cellSize);
+				}
+
 			}
 
 		}
