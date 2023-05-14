@@ -4,12 +4,16 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Minsweeper extends PApplet {
-
+	//user pref
 	int height = 20;
 	int width = 20;
 	int cellSize = 25;
-	long seed = 7678765;
 	double dificulty = 1.5;
+	
+	//seed for random number generator
+ 	long seed = System.currentTimeMillis();
+	
+	//globals
 	boolean gameOver = false;
 	Cell cells[][] = new Cell[width][height];
 	PImage mine;
