@@ -32,7 +32,7 @@ public class Minsweeper extends PApplet {
 	public void setup() {
 		background(255);
 		mine = loadImage("mine.png");
-		flag = loadImage("hammer-sickle.png");
+		flag = loadImage("flag.png");
 		// initialize cells
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
