@@ -1,16 +1,19 @@
 import java.util.Random;
+
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class Minsweeper extends PApplet {
 
-	//User pref
-	int height = 25;
-	int width = 25;
-	int cellSize = 30;
-	//seed for random number generator
-	long seed = System.currentTimeMillis();
-
+	int height = 20;
+	int width = 20;
+	int cellSize = 25;
+	long seed = 7678765;
+	double dificulty = 1.5;
+	boolean gameOver = false;
 	Cell cells[][] = new Cell[width][height];
+	PImage mine;
+	PImage flag;
 
 	public static void main(String[] args) {
 		PApplet.main("Minsweeper");
@@ -23,6 +26,8 @@ public class Minsweeper extends PApplet {
 
 	public void setup() {
 		background(255);
+		mine = loadImage("mine.png");
+		flag = loadImage("hammer-sickle.png");
 		// initialize cells
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -31,7 +36,7 @@ public class Minsweeper extends PApplet {
 		}
 		// place bombs
 		Random random = new Random(seed);
-		for (int i = 0; i < (width * height) / 10; i++) {
+		for (int i = 0; i < (width * height * dificulty) / 10; i++) {
 			int x = (int) (random.nextDouble() * width);
 			int y = (int) (random.nextDouble() * height);
 			Cell cell = cells[x][y];
@@ -55,11 +60,17 @@ public class Minsweeper extends PApplet {
 				cells[i][j].update();
 			}
 		}
-		textSize(128);
-		fill(0, 408, 612, 816);
+		if (gameOver) {
+			textSize(cellSize);
+			fill(250, 0, 0);
+			text("Game Over", (float) (((width * cellSize) / 2) - cellSize * 2.5), (height * cellSize) / 2);
+		}
 	}
 
 	public void mouseClicked() {
+		if (gameOver) {
+			return;
+		}
 		int X = mouseX;
 		int Y = mouseY;
 		if (mouseButton == RIGHT) {
@@ -86,16 +97,38 @@ public class Minsweeper extends PApplet {
 
 		void update() {
 			fill(r, g, b);
+			stroke(0, 0, 0);
 			strokeWeight(0);
 			square(x * cellSize, y * cellSize, cellSize);
 			if (isOpen && count > 0) {
 				textSize((float) (cellSize));
 				fill(0, 0, 100);
 				text(Integer.toString(count), x * cellSize + (3 * cellSize / 12), y * cellSize + (4 * cellSize / 5));
+				if (isBomb) {
+					image(mine, x * cellSize, y * cellSize, cellSize, cellSize);
+				}
 			}
+			if (isFlaged) {
+				image(flag, x * cellSize + 2, y * cellSize + 2, cellSize - 4, cellSize - 4);
+			}
+			if (isBomb && gameOver && !isFlaged) {
+				image(mine, x * cellSize, y * cellSize, cellSize, cellSize);
+				stroke(250, 0, 0);
+				strokeWeight(1);
+				line(x * cellSize, y * cellSize, x * cellSize + cellSize, y * cellSize + cellSize);
+				line(x * cellSize + cellSize, y * cellSize, x * cellSize, y * cellSize + cellSize);
+			}
+
 		}
 
 		void open() {
+			if (isFlaged) {
+				flag();
+				return;
+			}
+			if (isBomb) {
+				gameOver();
+			}
 			r = 0;
 			g = 0;
 			b = 250;
@@ -157,5 +190,9 @@ public class Minsweeper extends PApplet {
 				}
 			}
 		}
+	}
+
+	void gameOver() {
+		gameOver = true;
 	}
 }
