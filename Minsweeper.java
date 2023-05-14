@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Minsweeper extends PApplet {
+
 	//user pref
 	int height = 20;
 	int width = 20;
@@ -104,9 +105,36 @@ public class Minsweeper extends PApplet {
 			stroke(0, 0, 0);
 			strokeWeight(0);
 			square(x * cellSize, y * cellSize, cellSize);
+			fill(0, 0, 0);
 			if (isOpen && count > 0) {
 				textSize((float) (cellSize));
-				fill(0, 0, 100);
+				switch (count) {
+				case (1):
+					fill(3, 65, 252);
+					break;
+				case (2):
+					fill(78, 201, 20);
+					break;
+				case (3):
+					fill(250, 0, 0);
+					break;
+				case (4):
+					fill(13, 28, 122);
+					break;
+				case (5):
+					fill(122, 13, 13);
+					break;
+				case (6):
+					fill(11, 141, 153);
+					break;
+				case (7):
+					fill(0, 0, 0);
+					break;
+				case (8):
+					fill(70, 70, 70);
+					break;
+
+				}
 				text(Integer.toString(count), x * cellSize + (3 * cellSize / 12), y * cellSize + (4 * cellSize / 5));
 				if (isBomb) {
 					image(mine, x * cellSize, y * cellSize, cellSize, cellSize);
@@ -144,9 +172,9 @@ public class Minsweeper extends PApplet {
 			if (isBomb) {
 				gameOver();
 			}
-			r = 0;
-			g = 0;
-			b = 250;
+			r = 200;
+			g = 200;
+			b = 200;
 			isOpen = true;
 			if (count == 0) {
 				// open all adjacent cells
