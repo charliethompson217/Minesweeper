@@ -14,22 +14,22 @@ public class Minsweeper extends PApplet {
 	// globals
 	boolean lost = false;
 	boolean won = false;
-	Cell cells[][] = new Cell[width][height];
+	Cell cells[][];
 	PImage mine;
 	PImage flag;
 	PImage smiley;
 	ScoreBoard scoreBoard;
 	int mines = (int) ((width * height * dificulty) / 10);
 
-	int offX = 0;
-	int offY = 50;
+	int topMargin=50;
+	int leftMargin=0;
 
 	public static void main(String[] args) {
 		PApplet.main("Minsweeper");
 	}
 
 	public void settings() {
-		this.size(cellSize * width + offX, cellSize * height + offY);
+		this.size(cellSize * width + leftMargin, cellSize * height + topMargin);
 	}
 
 	public void setup() {
@@ -43,34 +43,34 @@ public class Minsweeper extends PApplet {
 	public void draw() {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				cells[i][j].update(offX, offY);
+				cells[i][j].update(leftMargin, topMargin);
 			}
 		}
 		if (lost) {
 			textSize(cellSize);
 			fill(250, 0, 0);
-			text("Game Over", (float) (((width * cellSize) / 2) - cellSize * 2.5) + offX,
-					(height * cellSize) / 2 + offY);
+			text("Game Over", (float) (((width * cellSize) / 2) - cellSize * 2.5) + leftMargin,
+					(height * cellSize) / 2 + topMargin);
 		}
 		if (won) {
 			textSize(cellSize);
 			fill(250, 0, 0);
-			text("Player Won!", (float) (((width * cellSize) / 2) - cellSize * 2.5) + offX,
-					(height * cellSize) / 2 + offY);
+			text("Player Won!", (float) (((width * cellSize) / 2) - cellSize * 2.5) + leftMargin,
+					(height * cellSize) / 2 + topMargin);
 		}
 		scoreBoard.update();
 	}
 
 	public void mouseClicked() {
-		if (mouseY < offY) {
-			if (mouseX > (width * cellSize) / 2 - offY && mouseX < (width * cellSize) / 2 + offY)
+		if (mouseY < topMargin) {
+			if (mouseX > (width * cellSize) / 2 - topMargin && mouseX < (width * cellSize) / 2 + topMargin)
 				startGame();
 			return;
 		}
 		if (lost)
 			return;
-		int X = mouseX - offX;
-		int Y = mouseY - offY;
+		int X = mouseX - leftMargin;
+		int Y = mouseY - topMargin;
 		Cell cell = cells[X / cellSize][Y / cellSize];
 		if (cell.isOpen)
 			return;
@@ -261,8 +261,8 @@ public class Minsweeper extends PApplet {
 
 		void update() {
 			fill(250, 0, 0);
-			square(((width * cellSize) / 2) - size / 2 + offX, 0, size);
-			image(smiley, ((width * cellSize) / 2) - size / 2 + offX, 0, size, size);
+			square(((width * cellSize) / 2) - size / 2 + leftMargin, 0, size);
+			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin, 0, size, size);
 		}
 	}
 
@@ -270,7 +270,7 @@ public class Minsweeper extends PApplet {
 		lost = false;
 		won = false;
 		cells = new Cell[width][height];
-		scoreBoard = new ScoreBoard(offY);
+		scoreBoard = new ScoreBoard(topMargin);
 		// seed for random number generator
 		long seed = System.currentTimeMillis();
 		// initialize cells
