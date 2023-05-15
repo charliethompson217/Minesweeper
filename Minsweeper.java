@@ -9,7 +9,7 @@ public class Minsweeper extends PApplet {
 
 	// user pref
 	int height = 25;
-	int width = 25;
+	int width = 45;
 	int cellSize = 30;
 	double dificulty = 1.5;
 	int topMargin = 50;
@@ -19,13 +19,14 @@ public class Minsweeper extends PApplet {
 	ScoreBoard scoreBoard;
 	Cell cells[][];
 	int mines;
+	int openCells;
 	boolean lost;
 	boolean won;
 	PImage mine;
 	PImage flag;
 	PImage smiley;
 	long seed;
-
+	int flags;
 	public static void main(String[] args) {
 		PApplet.main("Minsweeper");
 	}
@@ -50,9 +51,8 @@ public class Minsweeper extends PApplet {
 			}
 		}
 		scoreBoard.update();
-		if (mines == 0) {
+		if(openCells+mines==height*width)
 			playerWon();
-		}
 		if (lost) {
 			textSize(cellSize);
 			fill(250, 0, 0);
@@ -181,6 +181,7 @@ public class Minsweeper extends PApplet {
 				flag();
 				return;
 			}
+			openCells++;
 			if (isBomb) {
 				playerLost();
 			}
@@ -213,15 +214,14 @@ public class Minsweeper extends PApplet {
 				g = 250;
 				b = 250;
 				isFlaged = false;
-				if (isBomb)
-					mines++;
+				flags++;
+
 			} else {
 				r = 250;
 				g = 0;
 				b = 0;
 				isFlaged = true;
-				if (isBomb)
-					mines--;
+				flags--;
 			}
 		}
 
@@ -285,6 +285,8 @@ public class Minsweeper extends PApplet {
 		lost = false;
 		won = false;
 		mines = (int) ((width * height * dificulty) / 10);
+		flags = mines;
+		openCells=0;
 		cells = new Cell[width][height];
 		scoreBoard = new ScoreBoard(topMargin, seed);
 		// initialize cells
