@@ -17,17 +17,15 @@ public class Minsweeper extends PApplet {
 	
 	
 	// globals
+	ScoreBoard scoreBoard;
+	Cell cells[][];
 	int mines;
 	boolean lost;
 	boolean won;
-	long seed;
-	String time;
-	ScoreBoard scoreBoard;
-	Cell cells[][];
 	PImage mine;
 	PImage flag;
 	PImage smiley;
-
+	long seed;
 	
 	public static void main(String[] args) {
 		PApplet.main("Minsweeper");
@@ -38,11 +36,11 @@ public class Minsweeper extends PApplet {
 	}
 
 	public void setup() {
-		background(255);
 		mine = loadImage("mine.png");
 		flag = loadImage("flag.png");
 		smiley = loadImage("smiley.png");
-		startGame();
+		seed = System.currentTimeMillis();
+		startGame(seed);
 	}
 
 	public void draw() {
@@ -72,8 +70,11 @@ public class Minsweeper extends PApplet {
 
 	public void mouseClicked() {
 		if (mouseY < topMargin) {
-			if (mouseX > (width * cellSize) / 2 - topMargin && mouseX < (width * cellSize) / 2 + topMargin)
-				startGame();
+			if (mouseX > (width * cellSize) / 2 - topMargin && mouseX < (width * cellSize) / 2 + topMargin) {
+				if(mouseButton == LEFT)
+					seed = System.currentTimeMillis();
+				startGame(seed);
+			}
 			return;
 		}
 		if (lost)
@@ -261,14 +262,17 @@ public class Minsweeper extends PApplet {
 
 	class ScoreBoard {
 		int size;
-
-		ScoreBoard(int size) {
+		long startTime;
+		String time;
+		ScoreBoard(int size, long startTime) {
 			this.size = size;
+			this.startTime=startTime;
+			this.time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis()-startTime));
 		}
 
 		void update() {
 			if(!won&&!lost)
-				time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis()-seed));
+				time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis()-startTime));
 			fill(250, 0, 0);
 			square(((width * cellSize) / 2) - size / 2 + leftMargin, 0, size);
 			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin+1, 1, size-2, size-2);
@@ -277,14 +281,14 @@ public class Minsweeper extends PApplet {
 		}
 	}
 
-	void startGame() {
+	void startGame(long seed) {
+		background(255);
 		lost = false;
 		won = false;
 		mines = (int) ((width * height * dificulty) / 10);
 		cells = new Cell[width][height];
-		scoreBoard = new ScoreBoard(topMargin);
+		scoreBoard = new ScoreBoard(topMargin, System.currentTimeMillis());
 		// seed for random number generator
-		seed = System.currentTimeMillis();
 		// initialize cells
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
