@@ -288,7 +288,6 @@ public class Minsweeper extends PApplet {
 		mines = (int) ((width * height * dificulty) / 10);
 		cells = new Cell[width][height];
 		scoreBoard = new ScoreBoard(topMargin, System.currentTimeMillis());
-		// seed for random number generator
 		// initialize cells
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
