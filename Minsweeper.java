@@ -12,10 +12,9 @@ public class Minsweeper extends PApplet {
 	int width = 25;
 	int cellSize = 30;
 	double dificulty = 1.5;
-	int topMargin=50;
-	int leftMargin=0;
-	
-	
+	int topMargin = 50;
+	int leftMargin = 0;
+
 	// globals
 	ScoreBoard scoreBoard;
 	Cell cells[][];
@@ -26,7 +25,7 @@ public class Minsweeper extends PApplet {
 	PImage flag;
 	PImage smiley;
 	long seed;
-	
+
 	public static void main(String[] args) {
 		PApplet.main("Minsweeper");
 	}
@@ -71,7 +70,7 @@ public class Minsweeper extends PApplet {
 	public void mouseClicked() {
 		if (mouseY < topMargin) {
 			if (mouseX > (width * cellSize) / 2 - topMargin && mouseX < (width * cellSize) / 2 + topMargin) {
-				if(mouseButton == LEFT)
+				if (mouseButton == LEFT)
 					seed = System.currentTimeMillis();
 				startGame(seed);
 			}
@@ -79,7 +78,7 @@ public class Minsweeper extends PApplet {
 		}
 		if (lost)
 			return;
-		
+
 		int X = mouseX - leftMargin;
 		int Y = mouseY - topMargin;
 		Cell cell = cells[X / cellSize][Y / cellSize];
@@ -264,20 +263,21 @@ public class Minsweeper extends PApplet {
 		int size;
 		long startTime;
 		String time;
+
 		ScoreBoard(int size, long startTime) {
 			this.size = size;
-			this.startTime=startTime;
-			this.time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis()-startTime));
+			this.startTime = startTime;
+			this.time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis() - startTime));
 		}
 
 		void update() {
-			if(!won&&!lost)
-				time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis()-startTime));
+			if (!won && !lost)
+				time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis() - startTime));
 			fill(250, 0, 0);
 			square(((width * cellSize) / 2) - size / 2 + leftMargin, 0, size);
-			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin+1, 1, size-2, size-2);
+			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin + 1, 1, size - 2, size - 2);
 			textSize((float) (cellSize));
-			text(time, 25,25);
+			text(time, 25, 25);
 		}
 	}
 
