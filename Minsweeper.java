@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 import processing.core.PApplet;
@@ -10,20 +12,23 @@ public class Minsweeper extends PApplet {
 	int width = 25;
 	int cellSize = 30;
 	double dificulty = 1.5;
-
+	int topMargin=50;
+	int leftMargin=0;
+	
+	
 	// globals
-	boolean lost = false;
-	boolean won = false;
+	int mines;
+	boolean lost;
+	boolean won;
+	long seed;
+	String time;
+	ScoreBoard scoreBoard;
 	Cell cells[][];
 	PImage mine;
 	PImage flag;
 	PImage smiley;
-	ScoreBoard scoreBoard;
-	int mines = (int) ((width * height * dificulty) / 10);
 
-	int topMargin=50;
-	int leftMargin=0;
-
+	
 	public static void main(String[] args) {
 		PApplet.main("Minsweeper");
 	}
@@ -41,10 +46,15 @@ public class Minsweeper extends PApplet {
 	}
 
 	public void draw() {
+		background(255);
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				cells[i][j].update(leftMargin, topMargin);
 			}
+		}
+		scoreBoard.update();
+		if (mines == 0) {
+			playerWon();
 		}
 		if (lost) {
 			textSize(cellSize);
@@ -58,7 +68,6 @@ public class Minsweeper extends PApplet {
 			text("Player Won!", (float) (((width * cellSize) / 2) - cellSize * 2.5) + leftMargin,
 					(height * cellSize) / 2 + topMargin);
 		}
-		scoreBoard.update();
 	}
 
 	public void mouseClicked() {
@@ -69,19 +78,17 @@ public class Minsweeper extends PApplet {
 		}
 		if (lost)
 			return;
+		
 		int X = mouseX - leftMargin;
 		int Y = mouseY - topMargin;
 		Cell cell = cells[X / cellSize][Y / cellSize];
 		if (cell.isOpen)
 			return;
 
-		if (mouseButton == RIGHT) {
+		if (mouseButton == RIGHT)
 			cell.flag();
-		} else
+		else
 			cell.open();
-		if (mines == 0) {
-			playerWon();
-		}
 	}
 
 	class Cell {
@@ -260,19 +267,24 @@ public class Minsweeper extends PApplet {
 		}
 
 		void update() {
+			if(!won&&!lost)
+				time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis()-seed));
 			fill(250, 0, 0);
 			square(((width * cellSize) / 2) - size / 2 + leftMargin, 0, size);
-			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin, 0, size, size);
+			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin+1, 1, size-2, size-2);
+			textSize((float) (cellSize));
+			text(time, 25,25);
 		}
 	}
 
 	void startGame() {
 		lost = false;
 		won = false;
+		mines = (int) ((width * height * dificulty) / 10);
 		cells = new Cell[width][height];
 		scoreBoard = new ScoreBoard(topMargin);
 		// seed for random number generator
-		long seed = System.currentTimeMillis();
+		seed = System.currentTimeMillis();
 		// initialize cells
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
