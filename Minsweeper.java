@@ -274,7 +274,6 @@ public class Minsweeper extends PApplet {
 			if (!won && !lost)
 				time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis() - startTime));
 			fill(250, 0, 0);
-			square(((width * cellSize) / 2) - size / 2 + leftMargin, 0, size);
 			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin + 1, 1, size - 2, size - 2);
 			textSize((float) (cellSize));
 			text(time, 25, 25);
