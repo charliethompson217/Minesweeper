@@ -1,15 +1,14 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-
 import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Minsweeper extends PApplet {
 
 	// user pref
-	int height = 25;
-	int width = 45;
+	int height = 20;
+	int width = 40;
 	int cellSize = 30;
 	double dificulty = 1.5;
 	int topMargin = 50;
@@ -27,6 +26,7 @@ public class Minsweeper extends PApplet {
 	PImage smiley;
 	long seed;
 	int flags;
+
 	public static void main(String[] args) {
 		PApplet.main("Minsweeper");
 	}
@@ -51,7 +51,7 @@ public class Minsweeper extends PApplet {
 			}
 		}
 		scoreBoard.update();
-		if(openCells+mines==height*width)
+		if (openCells + mines == height * width)
 			playerWon();
 		if (lost) {
 			textSize(cellSize);
@@ -78,7 +78,6 @@ public class Minsweeper extends PApplet {
 		}
 		if (lost)
 			return;
-
 		int X = mouseX - leftMargin;
 		int Y = mouseY - topMargin;
 		Cell cell = cells[X / cellSize][Y / cellSize];
@@ -276,7 +275,8 @@ public class Minsweeper extends PApplet {
 			fill(250, 0, 0);
 			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin + 1, 1, size - 2, size - 2);
 			textSize((float) (cellSize));
-			text(time, 25, 25);
+			text(time, (width * cellSize) / 4 - 30, 35);
+			text(flags, (3 * width * cellSize) / 4 - 30, 35);
 		}
 	}
 
@@ -286,7 +286,7 @@ public class Minsweeper extends PApplet {
 		won = false;
 		mines = (int) ((width * height * dificulty) / 10);
 		flags = mines;
-		openCells=0;
+		openCells = 0;
 		cells = new Cell[width][height];
 		scoreBoard = new ScoreBoard(topMargin, seed);
 		// initialize cells
