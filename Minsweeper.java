@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -7,11 +5,11 @@ import processing.core.PImage;
 public class Minsweeper extends PApplet {
 
 	// user pref
-	int height = 20;
-	int width = 40;
-	int cellSize = 30;
-	double dificulty = 1.5;
-	int topMargin = 50;
+	int height = 28;
+	int width = 28;
+	int cellSize = 28;
+	double dificulty = 18;
+	int topMargin = cellSize;
 	int leftMargin = 0;
 
 	// globals
@@ -69,11 +67,22 @@ public class Minsweeper extends PApplet {
 
 	public void mouseClicked() {
 		if (mouseY < topMargin) {
-			if (mouseX > (width * cellSize) / 2 - topMargin && mouseX < (width * cellSize) / 2 + topMargin) {
-				if (mouseButton == LEFT)
-					seed = System.currentTimeMillis();
+			if (mouseX > (width * cellSize) / 2 - 3 * topMargin / 2
+					&& mouseX < (width * cellSize) / 2 - topMargin / 2) {
+				seed = System.currentTimeMillis();
 				startGame(seed);
 			}
+			if (mouseX > (width * cellSize) / 2 - topMargin / 2 && mouseX < (width * cellSize) / 2 + topMargin / 2) {
+				if (mouseButton == LEFT)
+					startGame(seed);
+			}
+			if (lost)
+				return;
+			if (mouseX > (width * cellSize) / 2 + topMargin / 2
+					&& mouseX < (width * cellSize) / 2 + 3 * topMargin / 2) {
+				hint();
+			}
+
 			return;
 		}
 		if (lost)
@@ -100,6 +109,7 @@ public class Minsweeper extends PApplet {
 		int count = 0;
 		boolean isOpen = false;
 		boolean isFlaged = false;
+		boolean hinted = false;
 
 		Cell(int x, int y) {
 			this.x = x;
@@ -144,7 +154,7 @@ public class Minsweeper extends PApplet {
 				text(Integer.toString(count), x * cellSize + (3 * cellSize / 12) + offX,
 						y * cellSize + (4 * cellSize / 5) + offY);
 				if (isBomb) {
-					image(mine, x * cellSize, y * cellSize, cellSize, cellSize);
+					image(mine, x * cellSize + offX, y * cellSize + offY, cellSize, cellSize);
 				}
 			}
 			if (isFlaged) {
@@ -261,22 +271,45 @@ public class Minsweeper extends PApplet {
 	class ScoreBoard {
 		int size;
 		long startTime;
-		String time;
+		long time;
+		long bucket;
 
 		ScoreBoard(int size, long startTime) {
 			this.size = size;
 			this.startTime = startTime;
-			this.time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis() - startTime));
+			this.time = System.currentTimeMillis() - startTime;
+			this.bucket = time;
 		}
 
 		void update() {
+			long temp = bucket;
+			time = System.currentTimeMillis() - startTime;
 			if (!won && !lost)
-				time = new SimpleDateFormat("mm:ss").format(new Date(System.currentTimeMillis() - startTime));
+				bucket = time;
+			int HH = (int) (bucket / (60 * 60 * 1000));
+			bucket = bucket % (60 * 60 * 1000);
+			int MM = (int) (bucket / (60 * 1000));
+			bucket = bucket % (60 * 1000);
+			int SS = (int) (bucket / 1000);
+			bucket = temp;
+			String t = "";
+			if (HH < 10)
+				t += "0";
+			t += HH + ":";
+			if (MM < 10)
+				t += "0";
+			t += MM + ":";
+			if (SS < 10)
+				t += "0";
+			t += SS;
+
 			fill(250, 0, 0);
-			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin + 1, 1, size - 2, size - 2);
+			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin - size, 1, size - 2, size - 2);
+			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin, 1, size - 2, size - 2);
+			image(smiley, ((width * cellSize) / 2) - size / 2 + leftMargin + size, 1, size - 2, size - 2);
 			textSize((float) (cellSize));
-			text(time, (width * cellSize) / 4 - 30, 35);
-			text(flags, (3 * width * cellSize) / 4 - 30, 35);
+			text(t, (width * cellSize) / 4 - 30, 7 * size / 8);
+			text(flags, (3 * width * cellSize) / 4 - 30, 7 * size / 8);
 		}
 	}
 
@@ -284,7 +317,7 @@ public class Minsweeper extends PApplet {
 		background(255);
 		lost = false;
 		won = false;
-		mines = (int) ((width * height * dificulty) / 10);
+		mines = (int) ((width * height * dificulty) / 100);
 		flags = mines;
 		openCells = 0;
 		cells = new Cell[width][height];
@@ -297,6 +330,7 @@ public class Minsweeper extends PApplet {
 		}
 		// place bombs
 		Random random = new Random(seed);
+		System.out.println(seed);
 		for (int i = 0; i < mines; i++) {
 			int x = (int) (random.nextDouble() * width);
 			int y = (int) (random.nextDouble() * height);
@@ -311,6 +345,24 @@ public class Minsweeper extends PApplet {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				cells[i][j].count();
+			}
+		}
+		hint();
+	}
+
+	void hint() {
+		int i = 0;
+		while (i < width * height) {
+			i++;
+			int x = (int) (Math.random() * width);
+			int y = (int) (Math.random() * height);
+			Cell cell = cells[x][y];
+			if (cell.count == 0 && !cell.isOpen && !cell.hinted) {
+				cell.g = 250;
+				cell.r = 0;
+				cell.b = 0;
+				cell.hinted = true;
+				return;
 			}
 		}
 	}
